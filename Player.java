@@ -24,7 +24,6 @@ public class Player {
 		this.login = false;
 	}
 	
-	
 	public String getUsername() {
 		return username;
 	}

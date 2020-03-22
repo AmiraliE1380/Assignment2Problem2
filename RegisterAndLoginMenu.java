@@ -28,7 +28,7 @@ public class RegisterAndLoginMenu {
 		}
 	}
 	
-	private void login(String[] input) {
+	private void login(String[] input) {//works good
 		String username = input[1];
 		String password = input[2];
 		
@@ -78,7 +78,7 @@ public class RegisterAndLoginMenu {
 				"");
 	}
 	
-	public void run() {
+	public void run() {//works good
 		Scanner scanner = new Scanner(System.in);
 		String input = new String();
 		
