@@ -1,6 +1,5 @@
 package Problem2;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -13,7 +12,7 @@ public class RegisterAndLoginMenu {
 		return matcher;
 	}
 	
-	private void register(String[] input) {
+	private void register(String[] input) {//works good
 		String username = input[1];
 		String password = input[2];
 		
@@ -42,9 +41,41 @@ public class RegisterAndLoginMenu {
 		}else if(!Player.getPlayerByName(username).getPassword().equals(password)) {
 			System.out.println("incorrect password");
 		}else {
-			Player.getPlayerByName(username).login();
+			Player player = Player.getPlayerByName(username);
 			System.out.println("login successful");
+			MainMenu mainMenu = new MainMenu();
+			player.login();
+			mainMenu.run(player);
 		}
+	}
+	
+	private void remove(String[] input) {//works good
+		String username = input[1];
+		String password = input[2];
+		
+		if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
+			System.out.println("username format is invalid");
+		}else if(!getMatcher(password, "([\\w|\\d|_]+)").matches()) {
+			System.out.println("password format is invalid");
+		}else if(!Player.doesUserwithThisNameExist(username)){
+			System.out.println("no user exists with this username");
+		}else if(!Player.getPlayerByName(username).getPassword().equals(password)) {
+			System.out.println("incorrect password");
+		}else {
+			Player player = Player.getPlayerByName(username);
+			System.out.println("removed " + player.getUsername() + " successfully");
+			Player.remove(username);
+		}
+	}
+	
+	private void help() {//works good
+		System.out.println("register [username] [password]\r\n" + 
+				"login [username] [password]\r\n" + 
+				"remove [username] [password]\r\n" + 
+				"list_users\r\n" + 
+				"help\r\n" + 
+				"exit\r\n" + 
+				"");
 	}
 	
 	public void run() {
@@ -57,11 +88,18 @@ public class RegisterAndLoginMenu {
 				register(input.split("\\s"));
 			}else if(getMatcher(input, "(login .+ .+)").matches()){
 				login(input.split("\\s"));
+			}else if(input.equals("help")){
+				help();
+			}else if(getMatcher(input, "(remove .+ .+)").matches()) {
+				remove(input.split("\\s"));
+			}else if(input.equals("list_users")) {
+				Player.showUsers();
 			}else {
 				System.out.println("invalid command");
 			}
 		}
 		
+		scanner.close();
 		System.out.println("program ended");
 	}
 

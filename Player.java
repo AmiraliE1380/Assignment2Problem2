@@ -1,6 +1,7 @@
 package Problem2;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class Player {
 	private static ArrayList<Player> allPlayers = new ArrayList<Player>();
@@ -11,6 +12,7 @@ public class Player {
 	private int numOfLooses;
 	private int score;
 	private boolean login;
+	
 	public Player(String username, String password) {
 		allPlayers.add(this);
 		this.username = username;
@@ -67,7 +69,11 @@ public class Player {
 		login = true;
 	}
 	
- 	public static Player getPlayerByName(String username) {
+	public void logout() {
+		login = false;
+	}
+	
+  	public static Player getPlayerByName(String username) {
 		for(Player player: allPlayers) {
 			if(player.getUsername().equals(username)) {
 				return player;
@@ -86,5 +92,37 @@ public class Player {
 		}
 		
 		return false;
+	}
+
+	public static void remove(String username) {
+		allPlayers.remove(getPlayerByName(username));
+	}
+
+	public static void showUsers() {//I don't know if the way it sorts upercase and lowercase is correct 
+		TreeSet<String> sortedListOfPlayers = sortUsernames();
+		
+		for(String username: sortedListOfPlayers) {
+			System.out.println(username);
+		}
+	}
+
+	public static void showScoreboard() {
+		TreeSet<String> sortedListOfPlayers = sortUsernames();
+		
+		for(String username: sortedListOfPlayers) {
+			Player player = getPlayerByName(username);
+			System.out.printf("%s %s %s % %s\n", username, player.getScore(), player.getNumOfWins(), 
+					player.getNumOfDraws(), player.getNumOfLooses());
+		}
+	}
+	
+	public static TreeSet sortUsernames() {
+		TreeSet<String> sortedListOfPlayers = new TreeSet<String>();
+		
+		for(Player player: allPlayers) {
+			sortedListOfPlayers.add(player.username);
+		}
+		
+		return sortedListOfPlayers;
 	}
 }
