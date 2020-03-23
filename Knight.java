@@ -1,5 +1,7 @@
 package Problem2;
 
+import java.util.ArrayList;
+
 public class Knight extends Piece{
 	
 	public Knight(String color,int xCoordinate, int yCoordinate) {
@@ -7,8 +9,7 @@ public class Knight extends Piece{
 	}
 
 	@Override
-	public boolean canMoveToDestination(int xCoordinate, int yCoordinate) {
-		// TODO Auto-generated method stub
+	public boolean  isObsticleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		return false;
 	}
 

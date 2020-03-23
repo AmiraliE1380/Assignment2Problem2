@@ -41,7 +41,7 @@ public class NewGame {
 		allPieces.add(new Knight("black", 8, 7));
 	}
 	
-	public boolean isInCoordinationAPiece(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+	public static boolean isInCoordinationAPiece(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		for(Piece piece: allPieces) {
 			if(piece.xCoordinate == xCoordinate && piece.yCoordinate == yCoordinate) {
 				return true;
@@ -51,7 +51,7 @@ public class NewGame {
 		return false;
 	}
 	
-	public Piece getPieceByCoordination(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+	public static Piece getPieceByCoordination(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		for(Piece piece: allPieces) {
 			if(piece.xCoordinate == xCoordinate && piece.yCoordinate == yCoordinate) {
 				return piece;
@@ -106,7 +106,8 @@ public class NewGame {
 		}
 	}
 	
-	public boolean move(String input, Piece piece, boolean playerHasMoved, ArrayList<Piece> allPieces) {
+	public boolean move(String input, Piece piece, boolean playerHasMoved,
+			ArrayList<Piece> allPieces, int[] limit) {
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
 		
@@ -115,7 +116,7 @@ public class NewGame {
 			return true;
 		}else if(piece == null) {
 			System.out.println("do not have any selected piece");
-		}else if(!piece.isObsticleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
+		}else if(piece.isObsticleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
 			System.out.println("cannot move to the spot");
 		}else if(getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
 				.getColor().equals(piece.getColor())) {
@@ -128,6 +129,7 @@ public class NewGame {
 				System.out.println("moved");
 			}
 			
+			limit[0]--;
 			piece.changeCoordinate(xCoordinate, yCoordinate);
 			return true;
 		}
@@ -142,9 +144,10 @@ public class NewGame {
 		ArrayList<Piece> allPieces = new ArrayList<Piece>();
 		constructPieces(allPieces);
 		String input = new String();
-		String color = "black";
+		String color = "white";
 		Piece piece = null;
 		boolean playerHasMoved = false;
+		int[] limitInArray = {limit};
 		
 		while(true){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
@@ -154,7 +157,8 @@ public class NewGame {
 			}else if(input.equals("deselect")) {
 				deselect(piece);
 			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
-				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved, allPieces);
+				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
+						allPieces, limitInArray);
 			}else if(input.equals("forfeit")) {
 				System.out.println();
 				break;
@@ -162,6 +166,7 @@ public class NewGame {
 			}else {
 				System.out.println("invalid command");
 			}
+			
 		}
 		
 		scanner.close();
