@@ -7,12 +7,22 @@ public abstract class Piece {
 	protected String type;
 	protected int xCoordinate;
 	protected int yCoordinate;
+	protected boolean hasBeenKilled;
 	
 	public Piece(String color, String type,int xCoordinate, int yCoordinate) {
 		this.color = color;
 		this.xCoordinate = xCoordinate;
 		this.yCoordinate = yCoordinate;
 		this.type = type;
+		this.hasBeenKilled = false;
+	}
+	
+	public boolean getHasBeenKilled() {
+		return hasBeenKilled;
+	}
+	
+	public void setHasbeenKilled(boolean hasBeenKilled) {
+		this.hasBeenKilled = hasBeenKilled;
 	}
 	
 	public String getType() {

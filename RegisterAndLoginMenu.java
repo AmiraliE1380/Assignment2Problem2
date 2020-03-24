@@ -81,9 +81,8 @@ public class RegisterAndLoginMenu {
 	public void run() {//works good
 		Scanner scanner = new Scanner(System.in);
 		String input = new String();
-		
+	
 		while(!(input = scanner.nextLine().trim()).equals("exit")) {
-			
 			if(getMatcher(input, "(register .+ .+)").matches()) {
 				register(input.split("\\s"));
 			}else if(getMatcher(input, "(login .+ .+)").matches()){

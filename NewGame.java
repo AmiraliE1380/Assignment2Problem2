@@ -69,12 +69,12 @@ public class NewGame {
 		return true;
 	}
 	
-	private void changeColor(String color) {
+	private void changeColor(Color color) {
 		
-		if(color.equals("white")) {
-			color = "black";
+		if(color.getColor().equals("white")) {
+			color.setColor("black");
 		}else {
-			color = "white";
+			color.setColor("white");
 		}
 		
 	}
@@ -85,7 +85,8 @@ public class NewGame {
 	
 		if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
 			System.out.println("wrong coordination");
-		}else if(!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getColor().equals(color)){
+		}else if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) && 
+				!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getColor().equals(color)){
 			System.out.println("you can only select one of your pieces");
 		}else if(!isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
 			System.out.println("no piece on this spot");
@@ -97,19 +98,22 @@ public class NewGame {
 		return null;
 	}
 	
-	public void deselect(Piece piece) {
+	public Piece deselect(Piece piece) {
 		if(piece == null) {
 			System.out.println("no piece is selected");
 		}else {
-			piece = null;
 			System.out.println("deselected");
 		}
+		return null;
 	}
 	
 	public static boolean DoesPieceInDestinationHaveSameColor(int xCoordinate,int  yCoordinate,
 			ArrayList<Piece> allPieces, Piece piece) {
-		return getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
-				.getColor().equals(piece.getColor());
+		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+			return getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
+					.getColor().equals(piece.getColor());
+		}
+		return false;
 	}
 	
 	public boolean move(String input, Piece piece, boolean playerHasMoved,
@@ -120,7 +124,7 @@ public class NewGame {
 		if(playerHasMoved) {
 			System.out.println("already moved");
 			return true;
-		}else if(isDestinationCorrect(xCoordinate, yCoordinate)) {
+		}else if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
 			System.out.println("wrong coordination");
 		}else if(piece == null) {
 			System.out.println("do not have any selected piece");
@@ -137,14 +141,38 @@ public class NewGame {
 			}else {
 				System.out.println("moved");
 			}
-			
 			limit[0]--;
 			piece.changeCoordinate(xCoordinate, yCoordinate);
 			return true;
 		}
 		
 		return false;
+	}
 	
+	private void help() {
+		System.out.println("select [x],[y]\r\n" + 
+				"deselect\r\n" + 
+				"move [x],[y]\r\n" + 
+				"next_turn\r\n" + 
+				"show_turn\r\n" + 
+				"undo\r\n" + 
+				"undo_number\r\n" + 
+				"show_moves [-all]\r\n" + 
+				"show_killed [-all]\r\n" + 
+				"show_board\r\n" + 
+				"help\r\n" + 
+				"forfeit");
+	}
+	
+	private boolean goToNextTurn(Color color, boolean playerHasMoved) {
+		if(playerHasMoved) {
+			changeColor(color);
+			System.out.println("turn completed");
+			return false;
+		}
+		
+		System.out.println("you must move then proceed to next turn");
+		return false;
 	}
 	
 	public void run(Player firstPlayer, Player secondplayer, int limit) {
@@ -153,33 +181,49 @@ public class NewGame {
 		ArrayList<Piece> allPieces = new ArrayList<Piece>();
 		constructPieces(allPieces);
 		String input = new String();
-		String color = "white";
+		Color color = new Color("white");
 		Piece piece = null;
 		boolean playerHasMoved = false;
 		int[] limitInArray = {limit};
 		
 		while(true){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
-//			changeColor(color);		
+			
 			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
-				piece = select(input.split("\\s")[1], allPieces, color);
+				piece = select(input.split("\\s")[1], allPieces, color.getColor());
 			}else if(input.equals("deselect")) {
-				deselect(piece);
+				piece = deselect(piece);
 			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
 				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
 						allPieces, limitInArray);
+			}else if(input.equals("next_turn")) {
+				playerHasMoved = goToNextTurn(color, playerHasMoved);
 			}else if(input.equals("forfeit")) {
 				System.out.println();
 				break;
 				//complete this
+			}else if(input.equals("help")) {
+				help();
 			}else {
 				System.out.println("invalid command");
 			}
-			
+		}
+	}
+	
+	private class Color{
+		String color;
+		
+		public Color(String color) {
+			this.color = color;
 		}
 		
-		scanner.close();
+		public String getColor() {
+			return color;
+		}
 		
+		public void setColor(String color) {
+			this.color = color;
+		}
 	}
 
 }

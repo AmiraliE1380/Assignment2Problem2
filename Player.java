@@ -110,7 +110,7 @@ public class Player {
 		
 		for(String username: sortedListOfPlayers) {
 			Player player = getPlayerByName(username);
-			System.out.printf("%s %s %s % %s\n", username, player.getScore(), player.getNumOfWins(), 
+			System.out.printf("%s %s %s %s %s\n", username, player.getScore(), player.getNumOfWins(), 
 					player.getNumOfDraws(), player.getNumOfLooses());
 		}
 	}

@@ -62,6 +62,6 @@ public class MainMenu {
 		
 		System.out.println("logout successful");
 		player.logout();
-		scanner.close();
+	//	scanner.close();
 	}
 }
