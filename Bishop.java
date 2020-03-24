@@ -59,8 +59,15 @@ public class Bishop extends Piece {
 	}
 
 	@Override
-	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
-		// TODO Auto-generated method stub
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		if(xCoordinate - yCoordinate == this.xCoordinate - this.yCoordinate) {
+			return true;
+		}
+		
+		if(xCoordinate + yCoordinate == this.xCoordinate + this.yCoordinate) {
+			return true;
+		}
+		
 		return false;
 	}
 

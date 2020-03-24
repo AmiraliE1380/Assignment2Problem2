@@ -105,10 +105,41 @@ public class Queen extends Piece{
 		return isObstacleInWayRookMove(xCoordinate, yCoordinate, allPieces);
 	}
 
-	@Override
-	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
-		// TODO Auto-generated method stub
+	private boolean canPieceMakeRookMove(int xCoordinate, int yCoordinate) {
+		if(xCoordinate == this.xCoordinate) {
+			return true;
+		}
+		
+		if(yCoordinate == this.yCoordinate) {
+			return true;
+		}
+		
 		return false;
 	}
-
+	
+	private boolean canPieceMakeBishopMove(int xCoordinate, int yCoordinate) {
+		if(xCoordinate - yCoordinate == this.xCoordinate - this.yCoordinate) {
+			return true;
+		}
+		
+		if(xCoordinate + yCoordinate == this.xCoordinate + this.yCoordinate) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		if(canPieceMakeRookMove(xCoordinate, yCoordinate)) {
+			return true;
+		}
+		
+		if(canPieceMakeBishopMove(xCoordinate, yCoordinate)) {
+			return true;
+		}
+		
+		
+		return false;
+	}
 }

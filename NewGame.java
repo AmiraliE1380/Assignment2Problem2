@@ -106,6 +106,12 @@ public class NewGame {
 		}
 	}
 	
+	public static boolean DoesPieceInDestinationHaveSameColor(int xCoordinate,int  yCoordinate,
+			ArrayList<Piece> allPieces, Piece piece) {
+		return getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
+				.getColor().equals(piece.getColor());
+	}
+	
 	public boolean move(String input, Piece piece, boolean playerHasMoved,
 			ArrayList<Piece> allPieces, int[] limit) {
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
@@ -114,16 +120,19 @@ public class NewGame {
 		if(playerHasMoved) {
 			System.out.println("already moved");
 			return true;
+		}else if(isDestinationCorrect(xCoordinate, yCoordinate)) {
+			System.out.println("wrong coordination");
 		}else if(piece == null) {
 			System.out.println("do not have any selected piece");
-		}else if(getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
-				.getColor().equals(piece.getColor())) {
+		}else if(!piece.canPieceMakeSuchMove(xCoordinate, yCoordinate, allPieces)) {
+			System.out.println("cannot move to the spot");
+		}else if(DoesPieceInDestinationHaveSameColor(xCoordinate, yCoordinate,allPieces, piece)) {
 			System.out.println("cannot move to the spot");
 		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
 					System.out.println("cannot move to the spot");
 		}else {
 			if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-				allPieces.remove(getPieceByCoordination(xCoordinate, yCoordinate, allPieces));
+				allPieces.remove(getPieceByCoordination(xCoordinate, yCoordinate, allPieces));//change this if needed
 				System.out.println("rival piece destroyed");
 			}else {
 				System.out.println("moved");

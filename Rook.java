@@ -24,7 +24,7 @@ public class Rook extends Piece{
 		
 		return false;
 	}
-//I guess the isObsticle in way for rokh is completed	
+//I guess the isObsticle in way for rook is completed	
 	@Override
 	public boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		if(xCoordinate == this.xCoordinate && yCoordinate > this.yCoordinate) {
@@ -47,8 +47,15 @@ public class Rook extends Piece{
 	}
 
 	@Override
-	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
-		// 
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		if(xCoordinate == this.xCoordinate) {
+			return true;
+		}
+		
+		if(yCoordinate == this.yCoordinate) {
+			return true;
+		}
+		
 		return false;
 	}
 

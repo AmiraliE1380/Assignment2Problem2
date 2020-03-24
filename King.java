@@ -15,9 +15,25 @@ public class King extends Piece{
 	}
 
 	@Override
-	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
-		// TODO Auto-generated method stub
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		if(yCoordinate == this.yCoordinate + 1 || yCoordinate == this.yCoordinate - 1) {
+			if(xCoordinate == this.xCoordinate) {
+				return true;
+			}
+			
+			if(xCoordinate == this.xCoordinate + 1 || xCoordinate == this.xCoordinate - 1) {
+				return true;
+			}
+		}
+		
+		if(yCoordinate == this.yCoordinate) {
+			if(xCoordinate == this.xCoordinate + 1 || xCoordinate == this.xCoordinate - 1) {
+				return true;
+			}
+		}
+		
 		return false;
+		
 	}
 
 

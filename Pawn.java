@@ -34,9 +34,55 @@ public class Pawn extends Piece{
 	}
 
 	@Override
-	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
-		// TODO Auto-generated method stub
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		if(yCoordinate == this.yCoordinate) {
+			if(color.equals("white")) {
+				if(this.xCoordinate == 2 && xCoordinate == 4) {
+					return true;
+				}
+				
+				if(this.xCoordinate + 1 == xCoordinate) {
+					return true;
+				}
+			}
+			
+			if(color.equals("color")) {
+				if(this.xCoordinate == 7 && xCoordinate == 5) {
+					return true;
+				}
+				
+				if(this.xCoordinate - 1 == xCoordinate) {
+					return true;
+				}
+			}
+		}
+		
+		if(yCoordinate == this.yCoordinate + 1 || yCoordinate == this.yCoordinate - 1 ) {
+			if(color.equals("white")) {
+				if(xCoordinate == this.xCoordinate + 1) {
+					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
+								yCoordinate,allPieces, this)) {
+							return true;
+						}
+					}
+				}
+			}
+			
+			if(color.equals("color")) {
+				if(xCoordinate == this.xCoordinate - 1) {
+					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
+								yCoordinate,allPieces, this)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
 		return false;
+		
 	}
 
 }

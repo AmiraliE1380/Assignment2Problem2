@@ -42,6 +42,6 @@ public abstract class Piece {
 	
 	public abstract boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces);
 	//write this method for each....
-	public abstract boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate);
+	public abstract boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces);
 	//write this method for each...
 }
