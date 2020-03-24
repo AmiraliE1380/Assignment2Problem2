@@ -9,7 +9,7 @@ public class Queen extends Piece{
 	}
 
 	@Override
-	public boolean  isObsticleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+	public boolean  isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		if(xCoordinate == this.xCoordinate) {
 			if(xCoordinate > this.xCoordinate) {
 				for(int i = this.xCoordinate + 1; i <= xCoordinate; i++) {
@@ -22,6 +22,12 @@ public class Queen extends Piece{
 		//complete this shit!!!!!!!!!!!!!
 		return false;
 
+	}
+
+	@Override
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

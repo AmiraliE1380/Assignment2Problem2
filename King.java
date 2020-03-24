@@ -9,16 +9,15 @@ public class King extends Piece{
 	}
 
 	@Override
-	public boolean isObsticleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
-		if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-			Piece piece = NewGame.getPieceByCoordination(xCoordinate, yCoordinate, allPieces);
-			if(piece.getColor().equals(color)) {
-				return true;
-			}
-		}
-		
+	public boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		return false;
-		
+		//there is no piece with the same color in the destination so the king has no obsticle and if there is a piece he can kill it
+	}
+
+	@Override
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 

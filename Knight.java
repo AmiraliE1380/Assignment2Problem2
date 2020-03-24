@@ -9,7 +9,13 @@ public class Knight extends Piece{
 	}
 
 	@Override
-	public boolean  isObsticleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+	public boolean  isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		return false;
+	}
+
+	@Override
+	public boolean canPieceMakeSuchMove(int xCoordinate, int yCoordinate) {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

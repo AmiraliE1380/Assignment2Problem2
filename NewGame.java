@@ -110,17 +110,17 @@ public class NewGame {
 			ArrayList<Piece> allPieces, int[] limit) {
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
-		
+		// write the methods for invalid moves of every piece
 		if(playerHasMoved) {
 			System.out.println("already moved");
 			return true;
 		}else if(piece == null) {
 			System.out.println("do not have any selected piece");
-		}else if(piece.isObsticleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
-			System.out.println("cannot move to the spot");
 		}else if(getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
 				.getColor().equals(piece.getColor())) {
 			System.out.println("cannot move to the spot");
+		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
+					System.out.println("cannot move to the spot");
 		}else {
 			if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
 				allPieces.remove(getPieceByCoordination(xCoordinate, yCoordinate, allPieces));
