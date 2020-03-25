@@ -135,8 +135,8 @@ public class NewGame {
 		piece.changeCoordinate(xCoordinate, yCoordinate);
 	}
 	
-	public boolean move(String input, Piece piece, boolean playerHasMoved,
-			ArrayList<Piece> allPieces, int[] limit, MovesAndKilledPieces movesAndKilledPieces) {
+	public boolean move(String input, Piece piece, boolean playerHasMoved, ArrayList<Piece> allPieces,
+			int[] limit, MovesAndKilledPieces movesAndKilledPieces) {
 		
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
@@ -177,9 +177,11 @@ public class NewGame {
 				"forfeit");
 	}
 	
-	private boolean goToNextTurn(Color color, boolean playerHasMoved) {
+	private boolean goToNextTurn(Color color, boolean playerHasMoved, Undo undoObject) {
 		if(playerHasMoved) {
 			changeColor(color);
+			undoObject.setFirstPlayersUndoChioseThisTurn(1);
+			undoObject.setSecondPlayersUndoChioseThisTurn(1);
 			System.out.println("turn completed");
 			return false;
 		}
@@ -304,7 +306,7 @@ public class NewGame {
 				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
 						allPieces, limitInArray, movesAndKilledPieces);
 			}else if(input.equals("next_turn")) {
-				playerHasMoved = goToNextTurn(color, playerHasMoved);
+				playerHasMoved = goToNextTurn(color, playerHasMoved, undoObject);
 			}else if(input.equals("show_board")) {
 				showBoard(allPieces);
 			}else if(input.equals("show_killed")) {
@@ -318,7 +320,10 @@ public class NewGame {
 			}else if(input.equals("show_turn")) {
 				showTurn(firstPlayer, secondPlayer, color);
 			}else if(input.equals("undo")) {
-				playerHasMoved = undoObject.undo(color.getColor(), movesAndKilledPieces, playerHasMoved);
+				playerHasMoved = undoObject.undo(color.getColor(), movesAndKilledPieces,
+						playerHasMoved, allPieces);
+			}else if(input.equals("undo_number")) {
+				undoObject.showUndoNumber(color);
 			}else if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
 				break;
 			}else if(isDraw(firstPlayer, secondPlayer, limitInArray)) {
@@ -411,10 +416,10 @@ public class NewGame {
 	}
 	
 	private class Undo{
-		int firstPlayersTotalUndoChoises; 
-		int secondPlayersTotalUndoChoises;
-		int firstPlayersUndoChioseThisTurn;
-		int secondPlayersUndoChioseThisTurn;
+		private int firstPlayersTotalUndoChoises; 
+		private int secondPlayersTotalUndoChoises;
+		private int firstPlayersUndoChioseThisTurn;
+		private int secondPlayersUndoChioseThisTurn;
 		
 		public Undo() {
 			firstPlayersTotalUndoChoises = 2; 
@@ -423,8 +428,24 @@ public class NewGame {
 			secondPlayersUndoChioseThisTurn = 1;
 		}
 		
+		public void setFirstPlayersUndoChioseThisTurn(int firstPlayersUndoChioseThisTurn) {
+			this.firstPlayersUndoChioseThisTurn = firstPlayersUndoChioseThisTurn;
+		}
+		
+		public void setSecondPlayersUndoChioseThisTurn(int secondPlayersUndoChioseThisTurn) {
+			this.secondPlayersUndoChioseThisTurn = secondPlayersUndoChioseThisTurn;
+		}
+		
+		public void showUndoNumber(Color color) {
+			if(color.getColor().equals("white")) {
+				System.out.println("you have " + firstPlayersTotalUndoChoises + " undo moves");
+			}else {
+				System.out.println("you have " + secondPlayersTotalUndoChoises + " undo moves");
+			}			
+		}
+		
 		public boolean undo(String color, MovesAndKilledPieces movesAndKilledPieces,
-				boolean playerHasMoved) {
+				boolean playerHasMoved, ArrayList<Piece> allPieces) {
 			
 			if(color.contentEquals("white")) {
 				if(firstPlayersTotalUndoChoises == 0) {
@@ -458,19 +479,44 @@ public class NewGame {
 			if(color.equals("white")) {
 				firstPlayersTotalUndoChoises--;
 				firstPlayersUndoChioseThisTurn--;
-				
-				String lastMove = movesAndKilledPieces.getMoves()
-						.get(movesAndKilledPieces.getMoves().size() - 1);
-				
-				
 			}else {
-				
+				secondPlayersTotalUndoChoises--;
+				secondPlayersUndoChioseThisTurn--;
 			}
 			
-			return false;
-				
-				
-				
+			undoSuccessfully(color, movesAndKilledPieces, allPieces);
+			
+			return false;	
+		}
+		
+		private void undoSuccessfully(String color, MovesAndKilledPieces movesAndKilledPieces,
+				ArrayList<Piece> allPieces) {
+			String lastMove = movesAndKilledPieces.getMoves()
+					.get(movesAndKilledPieces.getMoves().size() - 1);
+			
+			Matcher matcher;
+			(matcher = getMatcher(lastMove, "\\d+")).find();
+			int xOrigin = Integer.parseInt(matcher.group(1));
+			matcher.find();
+			int yOrigin = Integer.parseInt(matcher.group(1));
+			matcher.find();
+			int xDestination = Integer.parseInt(matcher.group(1));
+			matcher.find();
+			int yDestination = Integer.parseInt(matcher.group(1));
+			matcher.find();
+			
+			for(Piece piece: allPieces) {
+				if(piece.getXCoordinate() == xDestination &&piece.getYCoordinate() == yDestination) {
+					if(!piece.hasBeenKilled) {
+						piece.changeCoordinate(xOrigin, yOrigin);
+					}else {
+						piece.setHasbeenKilled(false);
+						//see if you need to remove killed piece report from killedPieces
+					}
+				}
+			}
+			
+			System.out.println("undo completed");
 		}
 	}
 
