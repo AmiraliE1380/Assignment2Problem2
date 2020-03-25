@@ -133,10 +133,10 @@ public class NewGame {
 		}else if(DoesPieceInDestinationHaveSameColor(xCoordinate, yCoordinate,allPieces, piece)) {
 			System.out.println("cannot move to the spot");
 		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
-					System.out.println("cannot move to the spot");
+			System.out.println("cannot move to the spot");
 		}else {
 			if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-				allPieces.remove(getPieceByCoordination(xCoordinate, yCoordinate, allPieces));//change this if needed
+				getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);//change this if needed
 				System.out.println("rival piece destroyed");
 			}else {
 				System.out.println("moved");
@@ -175,6 +175,28 @@ public class NewGame {
 		return false;
 	}
 	
+	private void showBoard(ArrayList<Piece> allPieces) {
+		String[][] board = new String[8][8];
+		
+		for(Piece piece: allPieces) {
+			if(!piece.getHasBeenKilled()) {
+				board[8 - piece.getXCoordinate()][piece.getYCoordinate() - 1] = piece.getType();
+			}
+		}
+		
+		for(String[] pieceTypeRow: board) {
+			for(String pieceType: pieceTypeRow) {
+				if(pieceType == null) {
+					System.out.print("  ");
+				}else {
+					System.out.print(pieceType);
+				}
+				System.out.print("|");
+			}
+			System.out.println("");
+		}
+	}
+	
 	public void run(Player firstPlayer, Player secondplayer, int limit) {
 
 		Scanner scanner = new Scanner(System.in);
@@ -198,6 +220,8 @@ public class NewGame {
 						allPieces, limitInArray);
 			}else if(input.equals("next_turn")) {
 				playerHasMoved = goToNextTurn(color, playerHasMoved);
+			}else if(input.equals("show_board")) {
+				showBoard(allPieces);
 			}else if(input.equals("forfeit")) {
 				System.out.println();
 				break;
@@ -224,6 +248,10 @@ public class NewGame {
 		public void setColor(String color) {
 			this.color = color;
 		}
+	}
+	
+	private class MovesAndKilledPieces{
+		
 	}
 
 }

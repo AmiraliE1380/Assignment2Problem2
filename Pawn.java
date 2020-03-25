@@ -1,7 +1,7 @@
 package Problem2;
 
 import java.util.ArrayList;
-
+//I'm not sure if I should use the trim method for input..........
 public class Pawn extends Piece{
 	
 	public Pawn(String color,int xCoordinate, int yCoordinate) {
@@ -46,7 +46,7 @@ public class Pawn extends Piece{
 				}
 			}
 			
-			if(color.equals("color")) {
+			if(color.equals("black")) {
 				if(this.xCoordinate == 7 && xCoordinate == 5) {
 					return true;
 				}
@@ -69,7 +69,7 @@ public class Pawn extends Piece{
 				}
 			}
 			
-			if(color.equals("color")) {
+			if(color.equals("black")) {
 				if(xCoordinate == this.xCoordinate - 1) {
 					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
 						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
