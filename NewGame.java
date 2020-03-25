@@ -61,6 +61,18 @@ public class NewGame {
 		return null;
 	}
 	
+	public static Piece getAlivePieceByCoordination(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		for(Piece piece: allPieces) {
+			if(piece.xCoordinate == xCoordinate && piece.yCoordinate == yCoordinate) {
+				if(!piece.getHasBeenKilled()) {
+					return piece;
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public boolean isDestinationCorrect(int xCoordinate, int yCoordinate) {
 		if(xCoordinate > 8 || xCoordinate < 1 || yCoordinate > 8 || xCoordinate < 1) {
 			return false;
@@ -85,14 +97,21 @@ public class NewGame {
 	
 		if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
 			System.out.println("wrong coordination");
-		}else if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) && 
-				!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getColor().equals(color)){
-			System.out.println("you can only select one of your pieces");
-		}else if(!isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+		}else if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+			if(!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).hasBeenKilled) {
+				if(!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).
+						getColor().equals(color)){
+					System.out.println("you can only select one of your pieces");
+				}else {//this may cause a problem due to the fact that is said in the instructions of the problem
+					System.out.println("selected");
+					return getPieceByCoordination(xCoordinate, yCoordinate, allPieces);
+				}
+			}else {
+				System.out.println("selected");
+				return getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces);
+			}
+		}else {
 			System.out.println("no piece on this spot");
-		}else {//this may cause a problem due to the fact that is said in the instructions of the problem
-			System.out.println("selected");
-			return getPieceByCoordination(xCoordinate, yCoordinate, allPieces);
 		}
 		
 		return null;
@@ -117,10 +136,11 @@ public class NewGame {
 	}
 	
 	private void moveSuccessfully(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces,
-			int[] limit, Piece piece, MovesAndKilledPieces movesAndKilledPieces) {
+			Piece piece, MovesAndKilledPieces movesAndKilledPieces) {
 		String typeOfKilledPiece = null;
 		
-		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) &&//look at this, this may make a problem
+				!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getHasBeenKilled()) {
 			getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);
 			typeOfKilledPiece = getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getType();
 			movesAndKilledPieces.addToKilledPieces(piece.getType(), xCoordinate, yCoordinate);
@@ -131,12 +151,11 @@ public class NewGame {
 		
 		movesAndKilledPieces.addMove(piece.getType(), piece.getXCoordinate(), piece.getYCoordinate(),
 				xCoordinate, yCoordinate, typeOfKilledPiece);
-		limit[0]--;
 		piece.changeCoordinate(xCoordinate, yCoordinate);
 	}
 	
 	public boolean move(String input, Piece piece, boolean playerHasMoved, ArrayList<Piece> allPieces,
-			int[] limit, MovesAndKilledPieces movesAndKilledPieces) {
+			MovesAndKilledPieces movesAndKilledPieces) {
 		
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
@@ -155,7 +174,7 @@ public class NewGame {
 		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
 			System.out.println("cannot move to the spot");
 		}else {
-			moveSuccessfully(xCoordinate, yCoordinate, allPieces, limit, piece, movesAndKilledPieces);
+			moveSuccessfully(xCoordinate, yCoordinate, allPieces, piece, movesAndKilledPieces);
 			return true;
 		}
 		
@@ -177,12 +196,13 @@ public class NewGame {
 				"forfeit");
 	}
 	
-	private boolean goToNextTurn(Color color, boolean playerHasMoved, Undo undoObject) {
+	private boolean goToNextTurn(Color color, boolean playerHasMoved, Undo undoObject, int[] limit) {
 		if(playerHasMoved) {
 			changeColor(color);
 			undoObject.setFirstPlayersUndoChioseThisTurn(1);
 			undoObject.setSecondPlayersUndoChioseThisTurn(1);
 			System.out.println("turn completed");
+			limit[0]--;
 			return false;
 		}
 		
@@ -282,6 +302,13 @@ public class NewGame {
 		}
 	}
 	
+	private void checkLimitInCaseOfDraw(Player firstPlayer, Player secondPlayer, int[] limit) {
+		if(limit[0] == 0) {
+			firstPlayer.addNumOfDraws();
+			secondPlayer.addNumOfDraws();
+		}
+	}
+	
 	public void run(Player firstPlayer, Player secondPlayer, int limit) {
 
 		Scanner scanner = new Scanner(System.in);
@@ -295,7 +322,7 @@ public class NewGame {
 		int[] limitInArray = {limit = isGameLimitless(limit)};
 		MovesAndKilledPieces movesAndKilledPieces = new MovesAndKilledPieces();
 		
-		while(true){//change the SHART!!!!!!!!!
+		while(limitInArray[0] != 0){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
 			
 			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
@@ -304,14 +331,17 @@ public class NewGame {
 				piece = deselect(piece);
 			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
 				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
-						allPieces, limitInArray, movesAndKilledPieces);
+						allPieces, movesAndKilledPieces);
 			}else if(input.equals("next_turn")) {
-				playerHasMoved = goToNextTurn(color, playerHasMoved, undoObject);
+				playerHasMoved = goToNextTurn(color, playerHasMoved, undoObject, limitInArray);
+				if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
+					break;
+				 }
 			}else if(input.equals("show_board")) {
 				showBoard(allPieces);
 			}else if(input.equals("show_killed")) {
 				movesAndKilledPieces.showKilled(color);
-			}else if(input.equals("show_killed")) {
+			}else if(input.equals("show_killed -all")) {
 				movesAndKilledPieces.showAllKilledPiecs();
 			}else if(input.equals("show_moves")){
 				movesAndKilledPieces.showMoves(color);
@@ -324,8 +354,6 @@ public class NewGame {
 						playerHasMoved, allPieces);
 			}else if(input.equals("undo_number")) {
 				undoObject.showUndoNumber(color);
-			}else if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
-				break;
 			}else if(isDraw(firstPlayer, secondPlayer, limitInArray)) {
 				break;
 			}else if(input.equals("forfeit")) {
@@ -337,6 +365,8 @@ public class NewGame {
 				System.out.println("invalid command");
 			}
 		}
+		
+		checkLimitInCaseOfDraw(firstPlayer, secondPlayer, limitInArray);
 	}
 	
 	private class Color{
@@ -495,7 +525,7 @@ public class NewGame {
 					.get(movesAndKilledPieces.getMoves().size() - 1);
 			
 			Matcher matcher;
-			(matcher = getMatcher(lastMove, "\\d+")).find();
+			(matcher = getMatcher(lastMove, "\\d+")).find();//fix this
 			int xOrigin = Integer.parseInt(matcher.group(1));
 			matcher.find();
 			int yOrigin = Integer.parseInt(matcher.group(1));

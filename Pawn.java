@@ -60,7 +60,8 @@ public class Pawn extends Piece{
 		if(yCoordinate == this.yCoordinate + 1 || yCoordinate == this.yCoordinate - 1 ) {
 			if(color.equals("white")) {
 				if(xCoordinate == this.xCoordinate + 1) {
-					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) &&
+						NewGame.getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces) != null) {
 						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
 								yCoordinate,allPieces, this)) {
 							return true;
@@ -71,7 +72,8 @@ public class Pawn extends Piece{
 			
 			if(color.equals("black")) {
 				if(xCoordinate == this.xCoordinate - 1) {
-					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) && 
+						NewGame.getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces) != null) {
 						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
 								yCoordinate,allPieces, this)) {
 							return true;

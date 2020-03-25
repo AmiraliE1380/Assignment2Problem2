@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Queen extends Piece{
 	
 	public Queen(String color,int xCoordinate, int yCoordinate) {
-		super(color, "P" + color.charAt(0), xCoordinate, yCoordinate);
+		super(color, "Q" + color.charAt(0), xCoordinate, yCoordinate);
 	}
 
 	private boolean isObstacleInUndirectLine(int xOrigin, int yOrigin, int xDestination,
