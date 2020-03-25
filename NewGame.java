@@ -270,6 +270,16 @@ public class NewGame {
 		System.out.println("you have forfeited");
 	}
 	
+	private void showTurn(Player firstPlayer, Player secondPlayer, Color color) {
+		if(color.getColor().equals("white")) {
+			System.out.println("it is player " + firstPlayer.getUsername()
+			+ " turn with color " + color.getColor());
+		}else {
+			System.out.println("it is player " + secondPlayer.getUsername()
+			+ " turn with color " + color.getColor());
+		}
+	}
+	
 	public void run(Player firstPlayer, Player secondPlayer, int limit) {
 
 		Scanner scanner = new Scanner(System.in);
@@ -277,6 +287,7 @@ public class NewGame {
 		constructPieces(allPieces);
 		String input = new String();
 		Color color = new Color("white");
+		Undo undoObject = new Undo();
 		Piece piece = null;
 		boolean playerHasMoved = false;
 		int[] limitInArray = {limit = isGameLimitless(limit)};
@@ -284,7 +295,6 @@ public class NewGame {
 		
 		while(true){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
-			//write the undo thing
 			
 			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
 				piece = select(input.split("\\s")[1], allPieces, color.getColor());
@@ -305,6 +315,10 @@ public class NewGame {
 				movesAndKilledPieces.showMoves(color);
 			}else if(input.equals("show_moves -all")){
 				movesAndKilledPieces.showAllMoves();
+			}else if(input.equals("show_turn")) {
+				showTurn(firstPlayer, secondPlayer, color);
+			}else if(input.equals("undo")) {
+				playerHasMoved = undoObject.undo(color.getColor(), movesAndKilledPieces, playerHasMoved);
 			}else if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
 				break;
 			}else if(isDraw(firstPlayer, secondPlayer, limitInArray)) {
@@ -317,7 +331,6 @@ public class NewGame {
 			}else {
 				System.out.println("invalid command");
 			}
-				
 		}
 	}
 	
@@ -394,6 +407,70 @@ public class NewGame {
 			for(String string: moves) {
 				System.out.println(string);
 			}
+		}
+	}
+	
+	private class Undo{
+		int firstPlayersTotalUndoChoises; 
+		int secondPlayersTotalUndoChoises;
+		int firstPlayersUndoChioseThisTurn;
+		int secondPlayersUndoChioseThisTurn;
+		
+		public Undo() {
+			firstPlayersTotalUndoChoises = 2; 
+			secondPlayersTotalUndoChoises = 2;
+			firstPlayersUndoChioseThisTurn = 1;
+			secondPlayersUndoChioseThisTurn = 1;
+		}
+		
+		public boolean undo(String color, MovesAndKilledPieces movesAndKilledPieces,
+				boolean playerHasMoved) {
+			
+			if(color.contentEquals("white")) {
+				if(firstPlayersTotalUndoChoises == 0) {
+					System.out.println("you cannot undo anymore");
+					return playerHasMoved;
+				}
+			}
+			
+			if(color.contentEquals("black")) {
+				if(secondPlayersTotalUndoChoises == 0) {
+					System.out.println("you cannot undo anymore");
+					return playerHasMoved;
+				}
+			}
+			
+			if(!playerHasMoved) {
+				System.out.println("you must move before undo");
+				return playerHasMoved;
+			}
+			
+			if(color.contentEquals("white") && firstPlayersUndoChioseThisTurn == 0) {
+				System.out.println("you have used your undo for this turn");
+				return playerHasMoved;
+			}
+			
+			if(color.contentEquals("black") && secondPlayersUndoChioseThisTurn == 0) {
+				System.out.println("you have used your undo for this turn");
+				return playerHasMoved;
+			}
+			
+			if(color.equals("white")) {
+				firstPlayersTotalUndoChoises--;
+				firstPlayersUndoChioseThisTurn--;
+				
+				String lastMove = movesAndKilledPieces.getMoves()
+						.get(movesAndKilledPieces.getMoves().size() - 1);
+				
+				
+			}else {
+				
+			}
+			
+			return false;
+				
+				
+				
 		}
 	}
 
