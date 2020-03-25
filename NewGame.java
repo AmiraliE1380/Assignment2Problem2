@@ -116,11 +116,31 @@ public class NewGame {
 		return false;
 	}
 	
+	private void moveSuccessfully(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces,
+			int[] limit, Piece piece, MovesAndKilledPieces movesAndKilledPieces) {
+		String typeOfKilledPiece = null;
+		
+		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+			getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);
+			typeOfKilledPiece = getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getType();
+			movesAndKilledPieces.addToKilledPieces(piece.getType(), xCoordinate, yCoordinate);
+			System.out.println("rival piece destroyed");
+		}else {
+			System.out.println("moved");
+		}
+		
+		movesAndKilledPieces.addMove(piece.getType(), piece.getXCoordinate(), piece.getYCoordinate(),
+				xCoordinate, yCoordinate, typeOfKilledPiece);
+		limit[0]--;
+		piece.changeCoordinate(xCoordinate, yCoordinate);
+	}
+	
 	public boolean move(String input, Piece piece, boolean playerHasMoved,
-			ArrayList<Piece> allPieces, int[] limit) {
+			ArrayList<Piece> allPieces, int[] limit, MovesAndKilledPieces movesAndKilledPieces) {
+		
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
-		// write the methods for invalid moves of every piece
+		
 		if(playerHasMoved) {
 			System.out.println("already moved");
 			return true;
@@ -135,14 +155,7 @@ public class NewGame {
 		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
 			System.out.println("cannot move to the spot");
 		}else {
-			if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-				getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);//change this if needed
-				System.out.println("rival piece destroyed");
-			}else {
-				System.out.println("moved");
-			}
-			limit[0]--;
-			piece.changeCoordinate(xCoordinate, yCoordinate);
+			moveSuccessfully(xCoordinate, yCoordinate, allPieces, limit, piece, movesAndKilledPieces);
 			return true;
 		}
 		
@@ -197,7 +210,67 @@ public class NewGame {
 		}
 	}
 	
-	public void run(Player firstPlayer, Player secondplayer, int limit) {
+	private boolean gameIsOver(Player firstPlayer, Player secondPlayer, ArrayList<Piece> allPieces) {
+		for(Piece piece: allPieces) {
+			if(piece.getType().charAt(0) == 'K') {
+				if(piece.getHasBeenKilled()) {
+					String winnerPlayer;
+					String winnerColor = piece.getColor();
+					
+					if(winnerColor.equals("white")) {
+						winnerPlayer = firstPlayer.getUsername();
+						firstPlayer.addNumOfWins();
+						secondPlayer.addNumOfLooses();
+					}else {
+						winnerPlayer = secondPlayer.getUsername();
+						firstPlayer.addNumOfLooses();
+						secondPlayer.addNumOfWins();
+					}
+					
+					
+					System.out.println("player " + winnerPlayer + " with color " + winnerColor + " won");
+					return true;
+				}
+			}
+		}
+		
+		
+		return false;
+	}
+	
+	private boolean isDraw(Player firstPlayer, Player secondPlayer, int[] limitInArray) {
+		if(limitInArray[0] == 0) {
+			firstPlayer.addNumOfDraws();
+			secondPlayer.addNumOfDraws();
+			System.out.println("draw");
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private int isGameLimitless(int limit) {
+		if(limit == 0) {
+			return -1;
+		}else {
+			return limit;
+		}
+	}
+	
+	private void forfeit(Player firstPlayer, Player secondPlayer, Color color) {
+		String winnersName;
+		
+		if(color.getColor().equals("white")) {
+			winnersName = firstPlayer.getUsername();
+		}else {
+			winnersName = secondPlayer.getUsername();
+		}
+		
+		System.out.println("player " + winnersName + " with color " + color.getColor() + " won");
+		System.out.println("you have forfeited");
+	}
+	
+	public void run(Player firstPlayer, Player secondPlayer, int limit) {
 
 		Scanner scanner = new Scanner(System.in);
 		ArrayList<Piece> allPieces = new ArrayList<Piece>();
@@ -206,10 +279,12 @@ public class NewGame {
 		Color color = new Color("white");
 		Piece piece = null;
 		boolean playerHasMoved = false;
-		int[] limitInArray = {limit};
+		int[] limitInArray = {limit = isGameLimitless(limit)};
+		MovesAndKilledPieces movesAndKilledPieces = new MovesAndKilledPieces();
 		
 		while(true){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
+			//write the undo thing
 			
 			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
 				piece = select(input.split("\\s")[1], allPieces, color.getColor());
@@ -217,25 +292,37 @@ public class NewGame {
 				piece = deselect(piece);
 			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
 				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
-						allPieces, limitInArray);
+						allPieces, limitInArray, movesAndKilledPieces);
 			}else if(input.equals("next_turn")) {
 				playerHasMoved = goToNextTurn(color, playerHasMoved);
 			}else if(input.equals("show_board")) {
 				showBoard(allPieces);
-			}else if(input.equals("forfeit")) {
-				System.out.println();
+			}else if(input.equals("show_killed")) {
+				movesAndKilledPieces.showKilled(color);
+			}else if(input.equals("show_killed")) {
+				movesAndKilledPieces.showAllKilledPiecs();
+			}else if(input.equals("show_moves")){
+				movesAndKilledPieces.showMoves(color);
+			}else if(input.equals("show_moves -all")){
+				movesAndKilledPieces.showAllMoves();
+			}else if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
 				break;
-				//complete this
+			}else if(isDraw(firstPlayer, secondPlayer, limitInArray)) {
+				break;
+			}else if(input.equals("forfeit")) {
+				forfeit(firstPlayer, secondPlayer, color);
+				break;
 			}else if(input.equals("help")) {
 				help();
 			}else {
 				System.out.println("invalid command");
 			}
+				
 		}
 	}
 	
 	private class Color{
-		String color;
+		private String color;
 		
 		public Color(String color) {
 			this.color = color;
@@ -251,7 +338,63 @@ public class NewGame {
 	}
 	
 	private class MovesAndKilledPieces{
+		private ArrayList<String> killedPieces;
+		private ArrayList<String> moves;
 		
+		public MovesAndKilledPieces(){
+			killedPieces = new ArrayList<String>();
+			moves = new ArrayList<String>();
+		}
+		
+		public ArrayList<String> getKilledPieces(){
+			return killedPieces;
+		}
+		
+		public void addToKilledPieces(String killedPieceType, int xCoordinate, int yCoordinate) {
+			killedPieces.add(killedPieceType + " killed in spot " + xCoordinate + "," + yCoordinate);
+		}
+		
+		public ArrayList<String> getMoves(){
+			return moves;
+		} 
+		
+		public void addMove(String pieceType, int xOrigin, int yOrigin,
+				int xDestination, int yDestination, String typeOfKilledPiece) {
+			String moveReport = pieceType + " " + xOrigin + "," + yOrigin + " to " + xDestination
+					+ "," + yDestination;
+			if(typeOfKilledPiece != null) {
+				moveReport = moveReport + " destroyed typeOfKilledPiece";
+			}
+			moves.add(moveReport);
+		}
+	
+		public void showKilled(Color color) {
+			for(String string: killedPieces) {
+				if(string.charAt(1) == color.getColor().charAt(0)) {
+					System.out.println(string);
+				}
+			}
+		}
+		
+		public void showAllKilledPiecs() {
+			for(String string: killedPieces) {
+				System.out.println(string);
+			}
+		}
+		
+		public void showMoves(Color color) {
+			for(String string: moves) {
+				if(string.charAt(1) == color.getColor().charAt(0)) {
+					System.out.println(string);
+				}
+			}
+		}
+		
+		public void showAllMoves() {
+			for(String string: moves) {
+				System.out.println(string);
+			}
+		}
 	}
 
 }

@@ -8,9 +8,10 @@ public class Player {
 	private String username;
 	private String password;
 	private int numOfWins;
+	private int numOfRivalForfeits;
+	private int numOfOwnForfeits;
 	private int numOfDraws;
 	private int numOfLooses;
-	private int score;
 	private boolean login;
 	
 	public Player(String username, String password) {
@@ -20,7 +21,8 @@ public class Player {
 		this.numOfWins = 0;
 		this.numOfDraws = 0;
 		this.numOfLooses = 0;
-		this.score = 0;
+		this.numOfRivalForfeits = 0;
+		this.numOfOwnForfeits = 0;
 		this.login = false;
 	}
 	
@@ -44,6 +46,14 @@ public class Player {
 		return numOfLooses;
 	}
 	
+	public int getNumberOfRivalsForfeits() {
+		return numOfRivalForfeits;
+	}
+
+	public int getNumberOfOwnForfeits() {
+		return numOfOwnForfeits;
+	}
+	
 	public void addNumOfWins() {
 		numOfWins++;
 	}
@@ -55,13 +65,13 @@ public class Player {
 	public void addNumOfLooses() {
 		numOfLooses++;
 	}
-	
-	public int getScore() {
-		return score;
+
+	public void addNumberOfRivalsForfeits() {
+		numOfRivalForfeits++;
 	}
 	
-	public void setScore(int score) {
-		this.score = score;
+	public void addNumberOfOwnForfeits() {
+		numOfOwnForfeits++;
 	}
 	
 	public void login() {
@@ -105,13 +115,18 @@ public class Player {
 		}
 	}
 
+	public static int calculateScore(Player player) {
+		return 3 * player.getNumOfWins() + player.getNumOfDraws() 
+		+ 2 * player.getNumberOfRivalsForfeits() - player.getNumberOfOwnForfeits();
+	}
+	
 	public static void showScoreboard() {
 		TreeSet<String> sortedListOfPlayers = sortUsernames();
 		
 		for(String username: sortedListOfPlayers) {
 			Player player = getPlayerByName(username);
-			System.out.printf("%s %s %s %s %s\n", username, player.getScore(), player.getNumOfWins(), 
-					player.getNumOfDraws(), player.getNumOfLooses());
+			System.out.printf("%s %s %s %s %s\n", username, calculateScore(player),
+					player.getNumOfWins(), player.getNumOfDraws(), player.getNumOfLooses());
 		}
 	}
 	
