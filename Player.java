@@ -122,15 +122,18 @@ public class Player {
 	
 	public static void showScoreboard() {
 		TreeSet<String> sortedListOfPlayers = sortUsernames();
+		Player[] sortedPlayers = new Player[sortedListOfPlayers.size()];
+		changeTreeSetToArrayList(sortedListOfPlayers, sortedPlayers);
+		sortBasedOnScores(sortedPlayers);
 		
-		for(String username: sortedListOfPlayers) {
-			Player player = getPlayerByName(username);
-			System.out.printf("%s %s %s %s %s\n", username, calculateScore(player),
-					player.getNumOfWins(), player.getNumOfDraws(), player.getNumOfLooses());
+		for(Player player: sortedPlayers) {
+			System.out.printf("%s %d %d %d %d\n", player.getUsername(), calculateScore(player),
+					player.getNumOfWins() + player.getNumberOfRivalsForfeits(),
+					player.getNumOfDraws(), player.getNumOfLooses() + player.getNumberOfOwnForfeits());
 		}
 	}
 	
-	public static TreeSet sortUsernames() {
+	private static TreeSet<String> sortUsernames() {
 		TreeSet<String> sortedListOfPlayers = new TreeSet<String>();
 		
 		for(Player player: allPlayers) {
@@ -138,5 +141,48 @@ public class Player {
 		}
 		
 		return sortedListOfPlayers;
+	}
+
+	private static void changeTreeSetToArrayList(TreeSet<String> sortedListOfPlayers, Player[] sortedPlayers) {
+		int counter = 0; 
+		
+		for(int i = 0; i < sortedListOfPlayers.size(); i++) {
+			for(Player player: allPlayers) {
+				if(sortedListOfPlayers.equals(player.getUsername())) {
+					sortedPlayers[counter++] = player;
+				}
+			}
+		}
+	}
+
+	private static void sortBasedOnScores(Player[] players) {
+		
+		for(int i = 0; i < players.length - 1; i++) {
+			for(int j = 0; j < players.length - 1 - i; j++) {
+				if(players[j].calculateScore(players[j]) < players[j + 1].calculateScore(players[j + 1])) {
+					swap(players[j], players[j + 1]);
+				}else if(players[j].calculateScore(players[j]) == players[j + 1].calculateScore(players[j + 1])) {
+					if(players[j].getNumOfWins() + players[j].getNumberOfRivalsForfeits() <
+							players[j + 1].getNumOfWins() + players[j + 1].getNumberOfRivalsForfeits()) {
+						swap(players[j], players[j + 1]);
+					}else if(players[j].getNumOfWins() + players[j].getNumberOfRivalsForfeits() ==
+							players[j + 1].getNumOfWins() + players[j + 1].getNumberOfRivalsForfeits()) {
+						if(players[j].getNumOfDraws() < players[j + 1].getNumOfDraws()) {
+							swap(players[j], players[j + 1]);
+						}else if(players[j].getNumOfDraws() == players[j + 1].getNumOfDraws()) {
+							if(players[j].getNumOfLooses() > players[j + 1].getNumOfLooses()) {
+								swap(players[j], players[j + 1]);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private static void swap(Player firstPlayer, Player secondPlayer) {
+		Player tempPlayer = firstPlayer;
+		firstPlayer = secondPlayer;
+		secondPlayer = tempPlayer;
 	}
 }

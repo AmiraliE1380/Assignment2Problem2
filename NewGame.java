@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 public class NewGame {
 	
+	Piece piece = null;
+	
 	private Matcher getMatcher(String input, String regex) {//works good
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(input);
@@ -143,7 +145,7 @@ public class NewGame {
 				!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getHasBeenKilled()) {
 			getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);
 			typeOfKilledPiece = getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getType();
-			movesAndKilledPieces.addToKilledPieces(piece.getType(), xCoordinate, yCoordinate);
+			movesAndKilledPieces.addToKilledPieces(typeOfKilledPiece, xCoordinate, yCoordinate);
 			System.out.println("rival piece destroyed");
 		}else {
 			System.out.println("moved");
@@ -203,6 +205,7 @@ public class NewGame {
 			undoObject.setSecondPlayersUndoChioseThisTurn(1);
 			System.out.println("turn completed");
 			limit[0]--;
+			piece = null;
 			return false;
 		}
 		
@@ -237,18 +240,20 @@ public class NewGame {
 			if(piece.getType().charAt(0) == 'K') {
 				if(piece.getHasBeenKilled()) {
 					String winnerPlayer;
-					String winnerColor = piece.getColor();
+					String loosersColor = piece.getColor();
+					String winnerColor;
 					
-					if(winnerColor.equals("white")) {
-						winnerPlayer = firstPlayer.getUsername();
-						firstPlayer.addNumOfWins();
-						secondPlayer.addNumOfLooses();
-					}else {
+					if(loosersColor.equals("white")) {
 						winnerPlayer = secondPlayer.getUsername();
+						secondPlayer.addNumOfWins();
+						firstPlayer.addNumOfLooses();
+						winnerColor = "black";
+					}else {
+						winnerPlayer = firstPlayer.getUsername();
 						firstPlayer.addNumOfLooses();
 						secondPlayer.addNumOfWins();
+						winnerColor = "white";
 					}
-					
 					
 					System.out.println("player " + winnerPlayer + " with color " + winnerColor + " won");
 					return true;
@@ -279,17 +284,22 @@ public class NewGame {
 		}
 	}
 	
-	private void forfeit(Player firstPlayer, Player secondPlayer, Color color) {
+	private boolean forfeit(Player firstPlayer, Player secondPlayer, Color color) {
 		String winnersName;
+		String winnersColor;
 		
 		if(color.getColor().equals("white")) {
-			winnersName = firstPlayer.getUsername();
-		}else {
 			winnersName = secondPlayer.getUsername();
+			winnersColor = "black";
+		}else {
+			winnersName = firstPlayer.getUsername();
+			winnersColor = "white";
 		}
 		
-		System.out.println("player " + winnersName + " with color " + color.getColor() + " won");
 		System.out.println("you have forfeited");
+		System.out.println("player " + winnersName + " with color " + color.getColor() + " won");
+		
+		return true;
 	}
 	
 	private void showTurn(Player firstPlayer, Player secondPlayer, Color color) {
@@ -317,12 +327,12 @@ public class NewGame {
 		String input = new String();
 		Color color = new Color("white");
 		Undo undoObject = new Undo();
-		Piece piece = null;
 		boolean playerHasMoved = false;
+		boolean playerHasForfeited = false;
 		int[] limitInArray = {limit = isGameLimitless(limit)};
 		MovesAndKilledPieces movesAndKilledPieces = new MovesAndKilledPieces();
 		
-		while(limitInArray[0] != 0){//change the SHART!!!!!!!!!
+		while(limitInArray[0] != 0 && !playerHasForfeited){//change the SHART!!!!!!!!!
 			input = scanner.nextLine().trim();
 			
 			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
@@ -330,8 +340,7 @@ public class NewGame {
 			}else if(input.equals("deselect")) {
 				piece = deselect(piece);
 			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
-				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved,
-						allPieces, movesAndKilledPieces);
+				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved, allPieces, movesAndKilledPieces);
 			}else if(input.equals("next_turn")) {
 				playerHasMoved = goToNextTurn(color, playerHasMoved, undoObject, limitInArray);
 				if(!playerHasMoved && gameIsOver(firstPlayer, secondPlayer, allPieces)) {
@@ -350,15 +359,13 @@ public class NewGame {
 			}else if(input.equals("show_turn")) {
 				showTurn(firstPlayer, secondPlayer, color);
 			}else if(input.equals("undo")) {
-				playerHasMoved = undoObject.undo(color.getColor(), movesAndKilledPieces,
-						playerHasMoved, allPieces);
+				playerHasMoved = undoObject.undo(color.getColor(), movesAndKilledPieces, playerHasMoved, allPieces);
 			}else if(input.equals("undo_number")) {
 				undoObject.showUndoNumber(color);
 			}else if(isDraw(firstPlayer, secondPlayer, limitInArray)) {
 				break;
 			}else if(input.equals("forfeit")) {
-				forfeit(firstPlayer, secondPlayer, color);
-				break;
+				playerHasForfeited = forfeit(firstPlayer, secondPlayer, color);
 			}else if(input.equals("help")) {
 				help();
 			}else {
@@ -411,7 +418,7 @@ public class NewGame {
 			String moveReport = pieceType + " " + xOrigin + "," + yOrigin + " to " + xDestination
 					+ "," + yDestination;
 			if(typeOfKilledPiece != null) {
-				moveReport = moveReport + " destroyed typeOfKilledPiece";
+				moveReport = moveReport + " destroyed " + typeOfKilledPiece;
 			}
 			moves.add(moveReport);
 		}
@@ -524,8 +531,8 @@ public class NewGame {
 			String lastMove = movesAndKilledPieces.getMoves()
 					.get(movesAndKilledPieces.getMoves().size() - 1);
 			
-			Matcher matcher;
-			(matcher = getMatcher(lastMove, "\\d+")).find();//fix this
+			Matcher matcher = getMatcher(lastMove, "(\\d+)");
+			matcher.find();//fix this
 			int xOrigin = Integer.parseInt(matcher.group(1));
 			matcher.find();
 			int yOrigin = Integer.parseInt(matcher.group(1));

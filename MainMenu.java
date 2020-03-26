@@ -6,13 +6,13 @@ import java.util.regex.Pattern;
 
 public class MainMenu {
 	
-	private Matcher getMatcher(String input, String regex) {//works good
+	private Matcher getMatcher(String input, String regex) {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(input);
 		return matcher;
 	}
 	
-	private void newGame(String[] input, Player firstPlayer) {//works good
+	private void newGame(String[] input, Player firstPlayer) {
 		String secondPlayer = input[1];
 		int limit = Integer.parseInt(input[2]);
 		
@@ -33,7 +33,7 @@ public class MainMenu {
 		}
 	}
 	
-	private void help() {//works good
+	private void help() {
 		System.out.println("new_game [username] [limit]\r\n" + 
 				"scoreboard\r\n" + 
 				"list_users\r\n" + 
@@ -41,7 +41,7 @@ public class MainMenu {
 				"logout");
 	}
 	
-	public void run(Player player) {//works good
+	public void run(Player player) {
 		String input;
 		Scanner scanner = new Scanner(System.in);
 		
@@ -62,6 +62,5 @@ public class MainMenu {
 		
 		System.out.println("logout successful");
 		player.logout();
-	//	scanner.close();
 	}
 }
