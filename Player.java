@@ -1,5 +1,9 @@
 package Problem2;
 
+import java.util.ArrayList; 
+import java.util.Collections; 
+import java.util.List; 
+import java.util.Comparator; 
 import java.util.ArrayList;
 import java.util.TreeSet;
 
@@ -107,7 +111,7 @@ public class Player {
 		allPlayers.remove(getPlayerByName(username));
 	}
 
-	public static void showUsers() {//I don't know if the way it sorts upercase and lowercase is correct 
+	public static void showUsers() { 
 		TreeSet<String> sortedListOfPlayers = sortUsernames();
 		
 		for(String username: sortedListOfPlayers) {
@@ -121,15 +125,11 @@ public class Player {
 	}
 	
 	public static void showScoreboard() {
-		TreeSet<String> sortedListOfPlayers = sortUsernames();
-		Player[] sortedPlayers = new Player[sortedListOfPlayers.size()];
-		changeTreeSetToArrayList(sortedListOfPlayers, sortedPlayers);
-		sortBasedOnScores(sortedPlayers);
+		Collections.sort(allPlayers, new PlayerSortingComparator());
 		
-		for(Player player: sortedPlayers) {
-			System.out.printf("%s %d %d %d %d\n", player.getUsername(), calculateScore(player),
-					player.getNumOfWins() + player.getNumberOfRivalsForfeits(),
-					player.getNumOfDraws(), player.getNumOfLooses() + player.getNumberOfOwnForfeits());
+		
+		for(Player player: allPlayers) {
+			System.out.println(player);
 		}
 	}
 	
@@ -143,46 +143,40 @@ public class Player {
 		return sortedListOfPlayers;
 	}
 
-	private static void changeTreeSetToArrayList(TreeSet<String> sortedListOfPlayers, Player[] sortedPlayers) {
-		int counter = 0; 
-		
-		for(int i = 0; i < sortedListOfPlayers.size(); i++) {
-			for(Player player: allPlayers) {
-				if(sortedListOfPlayers.equals(player.getUsername())) {
-					sortedPlayers[counter++] = player;
-				}
-			}
-		}
-	}
-
-	private static void sortBasedOnScores(Player[] players) {
-		
-		for(int i = 0; i < players.length - 1; i++) {
-			for(int j = 0; j < players.length - 1 - i; j++) {
-				if(players[j].calculateScore(players[j]) < players[j + 1].calculateScore(players[j + 1])) {
-					swap(players[j], players[j + 1]);
-				}else if(players[j].calculateScore(players[j]) == players[j + 1].calculateScore(players[j + 1])) {
-					if(players[j].getNumOfWins() + players[j].getNumberOfRivalsForfeits() <
-							players[j + 1].getNumOfWins() + players[j + 1].getNumberOfRivalsForfeits()) {
-						swap(players[j], players[j + 1]);
-					}else if(players[j].getNumOfWins() + players[j].getNumberOfRivalsForfeits() ==
-							players[j + 1].getNumOfWins() + players[j + 1].getNumberOfRivalsForfeits()) {
-						if(players[j].getNumOfDraws() < players[j + 1].getNumOfDraws()) {
-							swap(players[j], players[j + 1]);
-						}else if(players[j].getNumOfDraws() == players[j + 1].getNumOfDraws()) {
-							if(players[j].getNumOfLooses() > players[j + 1].getNumOfLooses()) {
-								swap(players[j], players[j + 1]);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	@Override
+    public String toString() { 
+        return username + " " + calculateScore(this) + " " + numOfWins + " " + numOfDraws + " " + numOfLooses; 
+    } 
 	
-	private static void swap(Player firstPlayer, Player secondPlayer) {
-		Player tempPlayer = firstPlayer;
-		firstPlayer = secondPlayer;
-		secondPlayer = tempPlayer;
+	static class PlayerSortingComparator implements Comparator<Player>{
+		
+		@Override
+		public int compare(Player firstPlayer, Player secondPlayer) { 
+			int scoreCompare = Integer.toString(calculateScore(secondPlayer)).
+					compareTo(Integer.toString(calculateScore(firstPlayer)));
+			
+			int winsCompare = Integer.toString(secondPlayer.getNumOfWins() + secondPlayer.getNumberOfRivalsForfeits()).
+					compareTo(Integer.toString(firstPlayer.getNumOfWins() + firstPlayer.getNumberOfRivalsForfeits()));
+			
+			int drawsCompare = Integer.toString(secondPlayer.getNumOfDraws()).
+					compareTo(Integer.toString(firstPlayer.getNumOfDraws()));
+			
+			int loosesCompare = Integer.toString(firstPlayer.getNumOfLooses() + secondPlayer.getNumberOfOwnForfeits()).
+					compareTo(Integer.toString(secondPlayer.getNumOfLooses() + secondPlayer.getNumberOfOwnForfeits()));
+			
+			int nameCompare = firstPlayer.getUsername().compareTo(secondPlayer.getUsername());
+			
+			if(scoreCompare != 0) {
+				return scoreCompare;
+			}else if(winsCompare != 0) {
+				return 	winsCompare;
+			}else if(drawsCompare != 0){
+				return drawsCompare;
+			}else if(loosesCompare != 0) {
+				return loosesCompare;
+			}else {
+				return nameCompare;
+			}
+		}
 	}
 }

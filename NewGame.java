@@ -250,8 +250,8 @@ public class NewGame {
 						winnerColor = "black";
 					}else {
 						winnerPlayer = firstPlayer.getUsername();
-						firstPlayer.addNumOfLooses();
-						secondPlayer.addNumOfWins();
+						firstPlayer.addNumOfWins();
+						secondPlayer.addNumOfLooses();
 						winnerColor = "white";
 					}
 					
@@ -289,15 +289,19 @@ public class NewGame {
 		String winnersColor;
 		
 		if(color.getColor().equals("white")) {
+			firstPlayer.addNumberOfOwnForfeits();
+			secondPlayer.addNumberOfRivalsForfeits();
 			winnersName = secondPlayer.getUsername();
 			winnersColor = "black";
 		}else {
+			firstPlayer.addNumberOfRivalsForfeits();
+			secondPlayer.addNumberOfOwnForfeits();
 			winnersName = firstPlayer.getUsername();
 			winnersColor = "white";
 		}
 		
 		System.out.println("you have forfeited");
-		System.out.println("player " + winnersName + " with color " + color.getColor() + " won");
+		System.out.println("player " + winnersName + " with color " + winnersColor + " won");
 		
 		return true;
 	}
@@ -552,7 +556,8 @@ public class NewGame {
 					}
 				}
 			}
-			
+			//see if the below action causes error or not
+			movesAndKilledPieces.moves.remove(movesAndKilledPieces.moves.size() - 1);
 			System.out.println("undo completed");
 		}
 	}
