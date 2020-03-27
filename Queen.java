@@ -12,7 +12,7 @@ public class Queen extends Piece{
 			int yDestination, ArrayList<Piece> allPieces) {
 		
 		for(int i = xOrigin + 1, j = yOrigin + 1; i < xDestination; i++, j++) {
-			if(NewGame.isInCoordinationAPiece(i, j, allPieces)) {
+			if(NewGame.isInCoordinationAnAlivePiece(i, j, allPieces)) {
 				return true;
 			}
 		}
@@ -25,7 +25,7 @@ public class Queen extends Piece{
 			int xDestination, int yDestination, ArrayList<Piece> allPieces) {
 		//searches the main diameter in the matrix
 		for(int i = xOrigin + 1, j = yOrigin - 1; i < xDestination; i++, j--) {
-			if(NewGame.isInCoordinationAPiece(i, j, allPieces)) {
+			if(NewGame.isInCoordinationAnAlivePiece(i, j, allPieces)) {
 				return true;
 			}
 		}
@@ -62,11 +62,11 @@ public class Queen extends Piece{
 			int constCoordinate, ArrayList<Piece> allPieces) {
 		for(int i = origin + 1; i < destination; i++) {
 			if(constCoordinate == this.xCoordinate) {
-				if(NewGame.isInCoordinationAPiece(constCoordinate, i, allPieces)) {
+				if(NewGame.isInCoordinationAnAlivePiece(constCoordinate, i, allPieces)) {
 					return true;
 				}
 			}else {
-				if(NewGame.isInCoordinationAPiece(i, constCoordinate, allPieces)) {
+				if(NewGame.isInCoordinationAnAlivePiece(i, constCoordinate, allPieces)) {
 					return true;
 				}
 			}

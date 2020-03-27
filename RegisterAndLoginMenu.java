@@ -28,7 +28,7 @@ public class RegisterAndLoginMenu {
 		}
 	}
 	
-	private void login(String[] input) {//works good
+	private void login(String[] input, Scanner scanner) {//works good
 		String username = input[1];
 		String password = input[2];
 		
@@ -45,7 +45,7 @@ public class RegisterAndLoginMenu {
 			System.out.println("login successful");
 			MainMenu mainMenu = new MainMenu();
 			player.login();
-			mainMenu.run(player);
+			mainMenu.run(player, scanner);
 		}
 	}
 	
@@ -74,19 +74,18 @@ public class RegisterAndLoginMenu {
 				"remove [username] [password]\r\n" + 
 				"list_users\r\n" + 
 				"help\r\n" + 
-				"exit\r\n" + 
-				"");
+				"exit");
 	}
 	
 	public void run() {//works good
 		Scanner scanner = new Scanner(System.in);
 		String input = new String();
 	
-		while(!(input = scanner.nextLine().trim()).equals("exit")) {
+		while(!(input = scanner.nextLine()).equals("exit")) {
 			if(getMatcher(input, "(register .+ .+)").matches()) {
 				register(input.split("\\s"));
 			}else if(getMatcher(input, "(login .+ .+)").matches()){
-				login(input.split("\\s"));
+				login(input.split("\\s"), scanner);
 			}else if(input.equals("help")){
 				help();
 			}else if(getMatcher(input, "(remove .+ .+)").matches()) {

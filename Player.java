@@ -145,7 +145,10 @@ public class Player {
 
 	@Override
     public String toString() { 
-        return username + " " + calculateScore(this) + " " + numOfWins + " " + numOfDraws + " " + numOfLooses; 
+		int wins = numOfWins + numOfRivalForfeits;
+		int looses = numOfLooses + numOfOwnForfeits;
+        return username + " " + calculateScore(this) + " " +
+        		wins + " " + numOfDraws + " " + looses; 
     } 
 	
 	static class PlayerSortingComparator implements Comparator<Player>{
@@ -161,7 +164,7 @@ public class Player {
 			int drawsCompare = Integer.toString(secondPlayer.getNumOfDraws()).
 					compareTo(Integer.toString(firstPlayer.getNumOfDraws()));
 			
-			int loosesCompare = Integer.toString(firstPlayer.getNumOfLooses() + secondPlayer.getNumberOfOwnForfeits()).
+			int loosesCompare = Integer.toString(firstPlayer.getNumOfLooses() + firstPlayer.getNumberOfOwnForfeits()).
 					compareTo(Integer.toString(secondPlayer.getNumOfLooses() + secondPlayer.getNumberOfOwnForfeits()));
 			
 			int nameCompare = firstPlayer.getUsername().compareTo(secondPlayer.getUsername());

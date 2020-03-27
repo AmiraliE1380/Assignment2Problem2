@@ -12,7 +12,7 @@ public class MainMenu {
 		return matcher;
 	}
 	
-	private void newGame(String[] input, Player firstPlayer) {
+	private void newGame(String[] input, Player firstPlayer, Scanner scanner) {
 		String secondPlayer = input[1];
 		int limit = Integer.parseInt(input[2]);
 		
@@ -25,11 +25,13 @@ public class MainMenu {
 		}else if(!Player.doesUserwithThisNameExist(secondPlayer)) {
 			System.out.println("no user exists with this username");
 		}else {
+			
+			
 			System.out.println("new game started successfully between " + firstPlayer.getUsername()
 						+ " and " + secondPlayer + " with limit " + limit);
 			
 			NewGame newGame = new NewGame();
-			newGame.run(firstPlayer, Player.getPlayerByName(secondPlayer), limit);
+			newGame.run(firstPlayer, Player.getPlayerByName(secondPlayer), limit, scanner);
 		}
 	}
 	
@@ -41,14 +43,14 @@ public class MainMenu {
 				"logout");
 	}
 	
-	public void run(Player player) {
+	public void run(Player player, Scanner scanner) {
 		String input;
-		Scanner scanner = new Scanner(System.in);
+	//	Scanner scanner = new Scanner(System.in);
 		
-		while(!(input = scanner.nextLine().trim()).equals("logout")) {
+		while(!(input = scanner.nextLine()).equals("logout")) {
 			
 			if(getMatcher(input, "(new_game .+ -{0,1}\\d+)").matches()) {
-				newGame(input.split("\\s"), player);
+				newGame(input.split("\\s"), player, scanner);
 			}else if(input.contentEquals("scoreboard")) {
 				Player.showScoreboard();
 			}else if(input.contentEquals("list_users")) {

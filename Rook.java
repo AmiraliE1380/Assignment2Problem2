@@ -12,11 +12,11 @@ public class Rook extends Piece{
 			int constCoordinate, ArrayList<Piece> allPieces) {
 		for(int i = origin + 1; i < destination; i++) {
 			if(constCoordinate == this.xCoordinate) {
-				if(NewGame.isInCoordinationAPiece(constCoordinate, i, allPieces)) {
+				if(NewGame.isInCoordinationAnAlivePiece(constCoordinate, i, allPieces)) {
 					return true;
 				}
 			}else {
-				if(NewGame.isInCoordinationAPiece(i, constCoordinate, allPieces)) {
+				if(NewGame.isInCoordinationAnAlivePiece(i, constCoordinate, allPieces)) {
 					return true;
 				}
 			}

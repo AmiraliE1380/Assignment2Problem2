@@ -10,7 +10,7 @@ public class Pawn extends Piece{
 
 	@Override
 	public boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
-		if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
+		if(NewGame.isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
 			if(yCoordinate == this.yCoordinate) {
 				return true;
 			}
@@ -18,14 +18,14 @@ public class Pawn extends Piece{
 		
 		if(this.color.equals("white")) {//for the situation it wants to jump two steps
 			if(xCoordinate == this.xCoordinate + 2 && 
-					NewGame.isInCoordinationAPiece(xCoordinate - 1, yCoordinate, allPieces)) {
+					NewGame.isInCoordinationAnAlivePiece(xCoordinate - 1, yCoordinate, allPieces)) {
 				return true;
 			}
 		}
 		
 		if(this.color.equals("black")) {
 			if(xCoordinate == this.xCoordinate - 2 && 
-					NewGame.isInCoordinationAPiece(xCoordinate + 1, yCoordinate, allPieces)) {
+					NewGame.isInCoordinationAnAlivePiece(xCoordinate + 1, yCoordinate, allPieces)) {
 				return true;
 			}			
 		}
@@ -60,9 +60,9 @@ public class Pawn extends Piece{
 		if(yCoordinate == this.yCoordinate + 1 || yCoordinate == this.yCoordinate - 1 ) {
 			if(color.equals("white")) {
 				if(xCoordinate == this.xCoordinate + 1) {
-					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) &&
+					if(NewGame.isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces) &&
 						NewGame.getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces) != null) {
-						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
+						if(!NewGame.doesPieceInDestinationHaveSameColor(xCoordinate,
 								yCoordinate,allPieces, this)) {
 							return true;
 						}
@@ -72,9 +72,9 @@ public class Pawn extends Piece{
 			
 			if(color.equals("black")) {
 				if(xCoordinate == this.xCoordinate - 1) {
-					if(NewGame.isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) && 
+					if(NewGame.isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces) && 
 						NewGame.getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces) != null) {
-						if(!NewGame.DoesPieceInDestinationHaveSameColor(xCoordinate,
+						if(!NewGame.doesPieceInDestinationHaveSameColor(xCoordinate,
 								yCoordinate,allPieces, this)) {
 							return true;
 						}

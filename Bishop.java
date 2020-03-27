@@ -12,7 +12,7 @@ public class Bishop extends Piece {
 			int yDestination, ArrayList<Piece> allPieces) {
 		
 		for(int i = xOrigin + 1, j = yOrigin + 1; i < xDestination; i++, j++) {
-			if(NewGame.isInCoordinationAPiece(i, j, allPieces)) {
+			if(NewGame.isInCoordinationAnAlivePiece(i, j, allPieces)) {
 				return true;
 			}
 		}
@@ -25,7 +25,7 @@ public class Bishop extends Piece {
 			int xDestination, int yDestination, ArrayList<Piece> allPieces) {
 		//searches the main diameter in the matrix
 		for(int i = xOrigin + 1, j = yOrigin - 1; i < xDestination; i++, j--) {
-			if(NewGame.isInCoordinationAPiece(i, j, allPieces)) {
+			if(NewGame.isInCoordinationAnAlivePiece(i, j, allPieces)) {
 				return true;
 			}
 		}

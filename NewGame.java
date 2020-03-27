@@ -53,6 +53,18 @@ public class NewGame {
 		return false;
 	}
 	
+	public static boolean isInCoordinationAnAlivePiece(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
+		for(Piece piece: allPieces) {
+			if(piece.xCoordinate == xCoordinate && piece.yCoordinate == yCoordinate) {
+				if(!piece.hasBeenKilled) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public static Piece getPieceByCoordination(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		for(Piece piece: allPieces) {
 			if(piece.xCoordinate == xCoordinate && piece.yCoordinate == yCoordinate) {
@@ -99,14 +111,14 @@ public class NewGame {
 	
 		if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
 			System.out.println("wrong coordination");
-		}else if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-			if(!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).hasBeenKilled) {
-				if(!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).
+		}else if(isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
+			if(!getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).hasBeenKilled) {
+				if(!getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).
 						getColor().equals(color)){
 					System.out.println("you can only select one of your pieces");
 				}else {//this may cause a problem due to the fact that is said in the instructions of the problem
 					System.out.println("selected");
-					return getPieceByCoordination(xCoordinate, yCoordinate, allPieces);
+					return getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces);
 				}
 			}else {
 				System.out.println("selected");
@@ -128,10 +140,10 @@ public class NewGame {
 		return null;
 	}
 	
-	public static boolean DoesPieceInDestinationHaveSameColor(int xCoordinate,int  yCoordinate,
+	public static boolean doesPieceInDestinationHaveSameColor(int xCoordinate,int  yCoordinate,
 			ArrayList<Piece> allPieces, Piece piece) {
-		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces)) {
-			return getPieceByCoordination(xCoordinate, yCoordinate, allPieces)
+		if(isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
+			return getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces)
 					.getColor().equals(piece.getColor());
 		}
 		return false;
@@ -171,7 +183,7 @@ public class NewGame {
 			System.out.println("do not have any selected piece");
 		}else if(!piece.canPieceMakeSuchMove(xCoordinate, yCoordinate, allPieces)) {
 			System.out.println("cannot move to the spot");
-		}else if(DoesPieceInDestinationHaveSameColor(xCoordinate, yCoordinate,allPieces, piece)) {
+		}else if(doesPieceInDestinationHaveSameColor(xCoordinate, yCoordinate,allPieces, piece)) {
 			System.out.println("cannot move to the spot");
 		}else if(piece.isObstacleInWay(xCoordinate, yCoordinate, allPieces)) {//write the method....
 			System.out.println("cannot move to the spot");
@@ -320,12 +332,13 @@ public class NewGame {
 		if(limit[0] == 0) {
 			firstPlayer.addNumOfDraws();
 			secondPlayer.addNumOfDraws();
+			System.out.println("draw");
 		}
 	}
 	
-	public void run(Player firstPlayer, Player secondPlayer, int limit) {
+	public void run(Player firstPlayer, Player secondPlayer, int limit, Scanner scanner) {
 
-		Scanner scanner = new Scanner(System.in);
+	//	Scanner scanner = new Scanner(System.in);
 		ArrayList<Piece> allPieces = new ArrayList<Piece>();
 		constructPieces(allPieces);
 		String input = new String();
@@ -337,13 +350,13 @@ public class NewGame {
 		MovesAndKilledPieces movesAndKilledPieces = new MovesAndKilledPieces();
 		
 		while(limitInArray[0] != 0 && !playerHasForfeited){//change the SHART!!!!!!!!!
-			input = scanner.nextLine().trim();
+			input = scanner.nextLine();
 			
-			if(getMatcher(input, "(select \\d+,\\d+)").matches()) {
+			if(getMatcher(input, "(select -{0,1}\\d+,-{0,1}\\d+)").matches()) {
 				piece = select(input.split("\\s")[1], allPieces, color.getColor());
 			}else if(input.equals("deselect")) {
 				piece = deselect(piece);
-			}else if(getMatcher(input, "(move \\d+,\\d+)").matches()) {
+			}else if(getMatcher(input, "(move -{0,1}\\d+,-{0,1}\\d+)").matches()) {
 				playerHasMoved = move(input.split("\\s")[1], piece, playerHasMoved, allPieces, movesAndKilledPieces);
 			}else if(input.equals("next_turn")) {
 				playerHasMoved = goToNextTurn(color, playerHasMoved, undoObject, limitInArray);
@@ -547,15 +560,30 @@ public class NewGame {
 			matcher.find();
 			
 			for(Piece piece: allPieces) {
-				if(piece.getXCoordinate() == xDestination &&piece.getYCoordinate() == yDestination) {
+				if(piece.getXCoordinate() == xDestination && piece.getYCoordinate() == yDestination) {
 					if(!piece.hasBeenKilled) {
 						piece.changeCoordinate(xOrigin, yOrigin);
-					}else {
-						piece.setHasbeenKilled(false);
-						//see if you need to remove killed piece report from killedPieces
 					}
 				}
 			}
+			
+			if(lastMove.contains("destroyed")) {
+				String pieceType = lastMove.split("\\s")[5];
+				for(Piece piece: allPieces) {
+					if(piece.hasBeenKilled) {
+						if(pieceType.equals(piece.getType())) {
+							if(piece.getXCoordinate() == xDestination && 
+									piece.getYCoordinate() == yDestination) {
+								piece.setHasbeenKilled(false);
+								movesAndKilledPieces.killedPieces.
+								remove(movesAndKilledPieces.killedPieces.size() - 1);
+								break;
+							}
+						}
+					}
+				}
+			}
+			
 			//see if the below action causes error or not
 			movesAndKilledPieces.moves.remove(movesAndKilledPieces.moves.size() - 1);
 			System.out.println("undo completed");

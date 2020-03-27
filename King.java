@@ -11,7 +11,7 @@ public class King extends Piece{
 	@Override
 	public boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		return false;
-		//there is no piece with the same color in the destination so the king has no obsticle and if there is a piece he can kill it
+		//there is no piece with the same color in the destination so the king has no obstacle and if there is a piece he can kill it
 	}
 
 	@Override
