@@ -87,8 +87,16 @@ public class NewGame {
 		return null;
 	}
 	
-	public boolean isDestinationCorrect(int xCoordinate, int yCoordinate) {
+	public boolean isDestinationCorrect(Long xCoordinate, Long yCoordinate) {
 		if(xCoordinate > 8 || xCoordinate < 1 || yCoordinate > 8 || xCoordinate < 1) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean isDestinationCorrectDouble(double xCoordinate, double yCoordinate) {
+		if(xCoordinate > 8 || xCoordinate < 1 || yCoordinate > 8 || yCoordinate < 1) {
 			return false;
 		}
 		
@@ -106,17 +114,28 @@ public class NewGame {
 	}
 	
 	private Piece select(String input, ArrayList<Piece> allPieces, String color) {
+		double xCoordinateDouble = Double.parseDouble(input.split(",")[0]);
+		double yCoordinateDouble = Double.parseDouble(input.split(",")[1]);
+		
+		if(!isDestinationCorrectDouble(xCoordinateDouble, yCoordinateDouble)) {
+			System.out.println("wrong coordination");
+			return null;
+		} 
+		
+		if(input.contains("0")) {
+			System.out.println("wrong coordination");
+			return null;
+		}
+		
 		int xCoordinate = Integer.parseInt(input.split(",")[0]);
 		int yCoordinate = Integer.parseInt(input.split(",")[1]);
 	
-		if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
-			System.out.println("wrong coordination");
-		}else if(isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
+		if(isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
 			if(!getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).hasBeenKilled) {
 				if(!getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).
 						getColor().equals(color)){
 					System.out.println("you can only select one of your pieces");
-				}else {//this may cause a problem due to the fact that is said in the instructions of the problem
+				}else {
 					System.out.println("selected");
 					return getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces);
 				}
@@ -153,10 +172,9 @@ public class NewGame {
 			Piece piece, MovesAndKilledPieces movesAndKilledPieces) {
 		String typeOfKilledPiece = null;
 		
-		if(isInCoordinationAPiece(xCoordinate, yCoordinate, allPieces) &&//look at this, this may make a problem
-				!getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getHasBeenKilled()) {
-			getPieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);
-			typeOfKilledPiece = getPieceByCoordination(xCoordinate, yCoordinate, allPieces).getType();
+		if(isInCoordinationAnAlivePiece(xCoordinate, yCoordinate, allPieces)) {
+			typeOfKilledPiece = getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).getType();
+			getAlivePieceByCoordination(xCoordinate, yCoordinate, allPieces).setHasbeenKilled(true);
 			movesAndKilledPieces.addToKilledPieces(typeOfKilledPiece, xCoordinate, yCoordinate);
 			System.out.println("rival piece destroyed");
 		}else {
@@ -171,15 +189,28 @@ public class NewGame {
 	public boolean move(String input, Piece piece, boolean playerHasMoved, ArrayList<Piece> allPieces,
 			MovesAndKilledPieces movesAndKilledPieces) {
 		
-		int xCoordinate = Integer.parseInt(input.split(",")[0]);
-		int yCoordinate = Integer.parseInt(input.split(",")[1]);
-		
 		if(playerHasMoved) {
 			System.out.println("already moved");
 			return true;
-		}else if(!isDestinationCorrect(xCoordinate, yCoordinate)) {
+		}
+		
+		double xCoordinateDouble = Double.parseDouble(input.split(",")[0]);
+		double yCoordinateDouble = Double.parseDouble(input.split(",")[1]);
+	
+		if(input.contains("0")) {
 			System.out.println("wrong coordination");
-		}else if(piece == null) {
+			return false;
+		}
+		
+		if(!isDestinationCorrectDouble(xCoordinateDouble, yCoordinateDouble)) {
+			System.out.println("wrong coordination");
+			return false;
+		} 
+		
+		int xCoordinate = Integer.parseInt(input.split(",")[0]);
+		int yCoordinate = Integer.parseInt(input.split(",")[1]);
+		
+		if(piece == null) {
 			System.out.println("do not have any selected piece");
 		}else if(!piece.canPieceMakeSuchMove(xCoordinate, yCoordinate, allPieces)) {
 			System.out.println("cannot move to the spot");

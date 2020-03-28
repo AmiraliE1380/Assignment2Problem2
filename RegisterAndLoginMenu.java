@@ -16,7 +16,9 @@ public class RegisterAndLoginMenu {
 		String username = input[1];
 		String password = input[2];
 		
-		if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
+		if(input.length > 3) {
+			System.out.println("invalid command");
+		}else if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("username format is invalid");
 		}else if(!getMatcher(password, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("password format is invalid");
@@ -32,7 +34,9 @@ public class RegisterAndLoginMenu {
 		String username = input[1];
 		String password = input[2];
 		
-		if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
+		if(input.length > 3) {
+			System.out.println("invalid command");
+		}else if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("username format is invalid");
 		}else if(!getMatcher(password, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("password format is invalid");
@@ -53,7 +57,9 @@ public class RegisterAndLoginMenu {
 		String username = input[1];
 		String password = input[2];
 		
-		if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
+		if(input.length > 3) {
+			System.out.println("invalid command");
+		}else if(!getMatcher(username, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("username format is invalid");
 		}else if(!getMatcher(password, "([\\w|\\d|_]+)").matches()) {
 			System.out.println("password format is invalid");
@@ -82,13 +88,13 @@ public class RegisterAndLoginMenu {
 		String input = new String();
 	
 		while(!(input = scanner.nextLine()).equals("exit")) {
-			if(getMatcher(input, "(register .+ .+)").matches()) {
+			if(getMatcher(input, "(register [^\\s]+ [^\\s]+)").matches()) {
 				register(input.split("\\s"));
-			}else if(getMatcher(input, "(login .+ .+)").matches()){
+			}else if(getMatcher(input, "(login [^\\s]+ [^\\s]+)").matches()){
 				login(input.split("\\s"), scanner);
 			}else if(input.equals("help")){
 				help();
-			}else if(getMatcher(input, "(remove .+ .+)").matches()) {
+			}else if(getMatcher(input, "(remove [^\\s]+ [^\\s]+)").matches()) {
 				remove(input.split("\\s"));
 			}else if(input.equals("list_users")) {
 				Player.showUsers();

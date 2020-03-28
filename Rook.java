@@ -9,9 +9,9 @@ public class Rook extends Piece{
 	}
 	
 	private boolean isObstacleInDirectPath(int origin, int destination,
-			int constCoordinate, ArrayList<Piece> allPieces) {
+			int constCoordinate, ArrayList<Piece> allPieces, char constAxis) {
 		for(int i = origin + 1; i < destination; i++) {
-			if(constCoordinate == this.xCoordinate) {
+			if(constAxis == 'x') {
 				if(NewGame.isInCoordinationAnAlivePiece(constCoordinate, i, allPieces)) {
 					return true;
 				}
@@ -28,19 +28,19 @@ public class Rook extends Piece{
 	@Override
 	public boolean isObstacleInWay(int xCoordinate, int yCoordinate, ArrayList<Piece> allPieces) {
 		if(xCoordinate == this.xCoordinate && yCoordinate > this.yCoordinate) {
-			return isObstacleInDirectPath(this.yCoordinate, yCoordinate, xCoordinate, allPieces);
+			return isObstacleInDirectPath(this.yCoordinate, yCoordinate, xCoordinate, allPieces, 'x');
 		}
 		
 		if(xCoordinate == this.xCoordinate && yCoordinate < this.yCoordinate) {
-			return isObstacleInDirectPath(this.yCoordinate, yCoordinate, xCoordinate, allPieces);
+			return isObstacleInDirectPath(this.yCoordinate, yCoordinate, xCoordinate, allPieces, 'x');
 		}
 		
 		if(xCoordinate > this.xCoordinate && yCoordinate == this.yCoordinate){
-			return isObstacleInDirectPath(this.xCoordinate, xCoordinate, yCoordinate, allPieces);			
+			return isObstacleInDirectPath(this.xCoordinate, xCoordinate, yCoordinate, allPieces, 'y');			
 		}
 		
 		if(xCoordinate < this.xCoordinate && yCoordinate == this.yCoordinate){
-			return isObstacleInDirectPath(xCoordinate, this.xCoordinate, yCoordinate, allPieces);			
+			return isObstacleInDirectPath(xCoordinate, this.xCoordinate, yCoordinate, allPieces, 'y');			
 		}
 		
 		return false;

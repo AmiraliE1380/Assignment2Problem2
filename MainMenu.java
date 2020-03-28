@@ -49,7 +49,7 @@ public class MainMenu {
 		
 		while(!(input = scanner.nextLine()).equals("logout")) {
 			
-			if(getMatcher(input, "(new_game .+ -{0,1}\\d+)").matches()) {
+			if(getMatcher(input, "(new_game [^\\s]+ -{0,1}\\d+)").matches()) {
 				newGame(input.split("\\s"), player, scanner);
 			}else if(input.contentEquals("scoreboard")) {
 				Player.showScoreboard();
